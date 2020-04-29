@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29424.173
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mika_discord", "mika_discord.csproj", "{57C57D1C-6641-4603-92D9-14A2074F362D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{57C57D1C-6641-4603-92D9-14A2074F362D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57C57D1C-6641-4603-92D9-14A2074F362D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57C57D1C-6641-4603-92D9-14A2074F362D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57C57D1C-6641-4603-92D9-14A2074F362D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {58EB13A0-9C6B-4C34-B02E-67505BA89C92}
+	EndGlobalSection
+EndGlobal
