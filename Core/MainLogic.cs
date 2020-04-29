@@ -69,8 +69,12 @@ namespace mika_discord.Core
         public async Task CommandRecieved(SocketMessage messageParam)
         {
             var message = messageParam as SocketUserMessage;
-            log.Debug("#{0} {1}: {2}", message.Channel.Name, message.Author.Username, message);
+            if (message == null)
+            {
+                return;
+            }
 
+            log.Debug("#{0} {1}: {2}", message.Channel.Name, message.Author.Username, message);
             if (message?.Author.IsBot ?? true)
             {
                 return;
