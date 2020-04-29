@@ -52,6 +52,6 @@ namespace mika_discord.Schedule
             return this.second.AsReadOnly();
         }
 
-        public abstract Task Execute(SocketTextChannel channel);
+        public abstract Task Execute(SocketTextChannel channel, DateTime now);
     }
 }

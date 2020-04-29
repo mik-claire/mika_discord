@@ -53,7 +53,7 @@ namespace mika_discord.Schedule
             {
                 if (isNow(now, schedule))
                 {
-                    await schedule.Execute(channel);
+                    await schedule.Execute(channel, now);
                 }
             }
         }
