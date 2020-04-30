@@ -11,10 +11,24 @@ namespace mika_discord.Schedule
     {
         private static Timer timer;
         private static readonly int interval = 1000;
-        private List<ScheduleBase> schedules = new List<ScheduleBase>();
+        private static List<ScheduleBase> schedules = new List<ScheduleBase>();
         private static SocketTextChannel channel;
 
-        public SchedulerService(SocketTextChannel targetChannel)
+        private static SchedulerService singletonInstance = null;
+        public static SchedulerService GetInstance()
+        {
+            return singletonInstance;
+        }
+
+        public static void Init(SocketTextChannel targetChannel)
+        {
+            if (singletonInstance == null)
+            {
+                singletonInstance = new SchedulerService(targetChannel);
+            }
+        }
+
+        private SchedulerService(SocketTextChannel targetChannel)
         {
             setup(targetChannel);
             timer = new Timer(interval);
@@ -27,29 +41,26 @@ namespace mika_discord.Schedule
             timer.Start();
         }
 
-        private void setup(SocketTextChannel targetChannel)
+        public ScheduleBase GetSchedule(Type scheduleType)
+        {
+            return schedules.Where(s => !s.GetType().IsAbstract && scheduleType.IsInstanceOfType(s)).First();
+        }
+
+        private static void setup(SocketTextChannel targetChannel)
         {
             channel = targetChannel;
             IEnumerable<Type> scheduleTypes = Assembly.GetAssembly(typeof(ScheduleBase)).GetTypes()
-                .Where(t =>
-                {
-                    return t.IsSubclassOf(typeof(ScheduleBase)) && !t.IsAbstract;
-                });
+                .Where(t => t.IsSubclassOf(typeof(ScheduleBase)) && !t.IsAbstract);
             foreach (var type in scheduleTypes)
             {
-                var schedule = (ScheduleBase)Activator.CreateInstance(type);
-                if (!schedule.Enable)
-                {
-                    continue;
-                }
-                this.schedules.Add(schedule);
+                schedules.Add((ScheduleBase)Activator.CreateInstance(type));
             }
         }
 
-        private async void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        private static async void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             DateTime now = DateTime.Now;
-            foreach (var schedule in this.schedules)
+            foreach (var schedule in schedules)
             {
                 if (isNow(now, schedule))
                 {
@@ -58,8 +69,12 @@ namespace mika_discord.Schedule
             }
         }
 
-        private bool isNow(DateTime now, ScheduleBase schedule)
+        private static bool isNow(DateTime now, ScheduleBase schedule)
         {
+            if (!schedule.Enabled)
+            {
+                return false;
+            }
             if (schedule.Year().Count > 0 && !schedule.Year().Contains(now.Year))
             {
                 return false;

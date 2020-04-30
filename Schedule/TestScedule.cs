@@ -15,7 +15,7 @@ namespace mika_discord.Schedule
         public TestScedule()
         {
             this.second = new List<int>() { zero, half };
-            this.enable = false;
+            this.Enabled = false;
         }
 
         public override async Task Execute(SocketTextChannel channel, DateTime now)

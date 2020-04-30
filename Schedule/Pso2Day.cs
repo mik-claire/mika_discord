@@ -19,6 +19,13 @@ namespace mika_discord.Schedule
         private static readonly string nightMessage =
             "PSO2の日終了まであと1時間…もう特典はしっかり受け取ったかな？まだの人は急いで急いでー！！";
 
+        private Dictionary<int, string> messageMap = new Dictionary<int, string>()
+        {
+            { morningHour, morningMessage },
+            { eveningHour, eveningMessage },
+            { nightHour, nightMessage }
+        };
+
         public Pso2Day()
         {
             this.day = new List<int>() { 2 };
@@ -40,21 +47,11 @@ namespace mika_discord.Schedule
                 sb.Append(" ");
             }
 
-            switch (now.Hour)
+            if (!this.messageMap.ContainsKey(now.Hour))
             {
-                case morningHour:
-                    sb.Append(morningMessage);
-                    break;
-                case eveningHour:
-                    sb.Append(eveningMessage);
-                    break;
-                case nightHour:
-                    sb.Append(nightMessage);
-                    break;
-                default:
-                    return;
+                return;
             }
-
+            sb.Append(this.messageMap[now.Hour]);
             await channel.SendMessageAsync(sb.ToString());
         }
     }

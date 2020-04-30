@@ -7,8 +7,7 @@ namespace mika_discord.Schedule
 {
     public abstract class ScheduleBase
     {
-        protected bool enable = true;
-        public bool Enable { get { return this.enable; } }
+        public bool Enabled { get; set; }
 
         protected List<int> year = new List<int>();
         public IList<int> Year()

@@ -19,8 +19,6 @@ namespace mika_discord.Core
         public static CommandService Commands;
         public static DiscordSocketClient Client;
 
-        public static SchedulerService Scheduler;
-
         private static readonly string settingFilePath = "./setting.yml";
         private static Setting setting;
 
@@ -37,10 +35,6 @@ namespace mika_discord.Core
                     .Build()
                     .Deserialize<Setting>(File.ReadAllText(settingFilePath, Encoding.UTF8));
 
-            Provider = new ServiceCollection().BuildServiceProvider();
-            Commands = new CommandService();
-            await Commands.AddModulesAsync(Assembly.GetEntryAssembly(), Provider);
-
             Client = new DiscordSocketClient();
             Client.MessageReceived += CommandRecieved;
             Client.Log += msg =>
@@ -50,7 +44,7 @@ namespace mika_discord.Core
             };
 
             string token = setting.Token;
-            Client.Ready += SchedulerStart;
+            Client.Ready += ServiceInit;
             await Client.LoginAsync(Discord.TokenType.Bot, token);
             await Client.StartAsync();
             
@@ -59,11 +53,14 @@ namespace mika_discord.Core
             await Task.Delay(-1);
         }
 
-        public Task SchedulerStart()
+        public async Task ServiceInit()
         {
-            Scheduler = new SchedulerService(Client.GetGuild(setting.ServerId).GetTextChannel(setting.ChannelId));
-            Scheduler.Start();
-            return null;
+            SchedulerService.Init(Client.GetGuild(setting.ServerId).GetTextChannel(setting.ChannelId));
+            SchedulerService.GetInstance().Start();
+
+            Provider = new ServiceCollection().BuildServiceProvider();
+            Commands = new CommandService();
+            await Commands.AddModulesAsync(Assembly.GetEntryAssembly(), Provider);
         }
 
         public async Task CommandRecieved(SocketMessage messageParam)
