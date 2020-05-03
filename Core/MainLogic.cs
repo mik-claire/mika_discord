@@ -1,6 +1,7 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
+using mika_discord.Reaction;
 using mika_discord.Schedule;
 using System;
 using System.IO;
@@ -56,6 +57,8 @@ namespace mika_discord.Core
             SchedulerService.Init(Client.GetGuild(setting.ServerId).GetTextChannel(setting.ChannelId));
             SchedulerService.GetInstance().Start();
 
+            ReactionService.Init();
+
             Provider = new ServiceCollection().BuildServiceProvider();
             Commands = new CommandService();
             await Commands.AddModulesAsync(Assembly.GetEntryAssembly(), Provider);
@@ -75,12 +78,14 @@ namespace mika_discord.Core
                 return;
             }
 
-            int argPos = 0;
-            if (message.HasMentionPrefix(Client.CurrentUser, ref argPos))
+            if (message.Content.StartsWith(Client.CurrentUser.Mention))
             {
-
+                await ReactionService.Reaction(message.Channel, message.Author,
+                    getArgsFromMention(message.Content, Client.CurrentUser));
+                return;
             }
 
+            int argPos = 0;
             if (!message.HasCharPrefix('/', ref argPos))
             {
                 return;
@@ -93,6 +98,11 @@ namespace mika_discord.Core
             {
                 await context.Channel.SendMessageAsync(getErrorMessage(result));
             }
+        }
+
+        private static string[] getArgsFromMention(string content, SocketUser user)
+        {
+            return content.Substring(user.Mention.Length).Split(' ', StringSplitOptions.RemoveEmptyEntries);
         }
 
         private static string getErrorMessage(IResult result)
