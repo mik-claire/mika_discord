@@ -59,8 +59,8 @@ namespace mika_discord.Schedule
 
         private static async void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            DateTime now = DateTime.Now;
-            foreach (var schedule in schedules)
+            var now = DateTime.Now;
+            foreach (ScheduleBase schedule in schedules)
             {
                 if (isNow(now, schedule))
                 {

@@ -15,17 +15,16 @@ namespace mika_discord.Core
     public class MainLogic
     {
         private static Logger log;
-        public static IServiceProvider Provider;
-        public static CommandService Commands;
-        public static DiscordSocketClient Client;
-
         private static readonly string settingFilePath = "./setting.yml";
         private static Setting setting;
+
+        public static DiscordSocketClient Client;
+        public static IServiceProvider Provider;
+        public static CommandService Commands;
 
         /// <summary>
         /// activate process
         /// </summary>
-        /// <returns></returns>
         public async Task MainAsync()
         {
             Logger.Init(@"./mika_pso2_bot.log", true);
@@ -49,7 +48,6 @@ namespace mika_discord.Core
             await Client.StartAsync();
             
             log.Info("activated.");
-
             await Task.Delay(-1);
         }
 
@@ -78,14 +76,18 @@ namespace mika_discord.Core
             }
 
             int argPos = 0;
-            if (!message.HasCharPrefix('/', ref argPos) &&
-                !message.HasMentionPrefix(Client.CurrentUser, ref argPos))
+            if (message.HasMentionPrefix(Client.CurrentUser, ref argPos))
+            {
+
+            }
+
+            if (!message.HasCharPrefix('/', ref argPos))
             {
                 return;
             }
 
             var context = new CommandContext(Client, message);
-            var result = await Commands.ExecuteAsync(context, argPos, Provider);
+            IResult result = await Commands.ExecuteAsync(context, argPos, Provider);
 
             if (!result.IsSuccess)
             {

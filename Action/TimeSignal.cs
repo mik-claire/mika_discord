@@ -1,14 +1,19 @@
-﻿using System;
+﻿using mika_discord.Schedule;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Discord.WebSocket;
 
-namespace mika_discord.Schedule
+namespace mika_discord.Action
 {
-    public class TimeSignal : ScheduleBase
+    public static class TimeSignal
     {
-        private Dictionary<int, string> messageMap = new Dictionary<int, string>()
+        private static readonly string statusMessageFormat = "現在、時報は {0} になってますよ。";
+        private static readonly string errorMessage =
+@"時報の状態を確認する場合は指定なしで。
+ON / OFF を切り替える場合は、on / off のどちらかを指定してくださいね！";
+        private static readonly string onMessage = "時報をONにしました！キリのいい時間にお知らせしますねーっ。";
+        private static readonly string offMessage = "時報をOFFにしました！ONにしたいときはまた教えてくださいね！";
+        private static readonly string on = "ON";
+        private static readonly string off = "OFF";
+        private static readonly Dictionary<int, string> messageMap = new Dictionary<int, string>()
         {
             { 0, "0時、日付が変わったね！更新されたデイリーミッションでも見に行こうかな？" },
             { 1, "1時、まだ寝ないのかな？夜ふかしは程々にねー？" },
@@ -36,21 +41,40 @@ namespace mika_discord.Schedule
             { 23, "23時！そろそろ日付変わっちゃうね…デイリーミッションはちゃんと消化した？" }
         };
 
-        public TimeSignal()
+        public static string GetTimeSignalMessage(int hour)
         {
-            this.minute = new List<int>() { 0 };
-            this.second = new List<int>() { 0 };
-        }
-
-        public override async Task Execute(SocketTextChannel channel, DateTime now)
-        {
-            if (!this.messageMap.ContainsKey(now.Hour) ||
-                string.IsNullOrEmpty(this.messageMap[now.Hour]))
+            if (!messageMap.ContainsKey(hour))
             {
-                return;
+                return string.Empty;
             }
 
-            await channel.SendMessageAsync(this.messageMap[now.Hour]);
+            return messageMap[hour];
+        }
+
+        public static string TimeSignalStatus()
+        {
+            return string.Format(statusMessageFormat,
+                (SchedulerService.GetInstance().GetSchedule(typeof(TimeSignalSchedule)) as TimeSignalSchedule)
+                    .Enabled ? on : off);
+        }
+
+        public static string TimeSignalOn()
+        {
+            (SchedulerService.GetInstance().GetSchedule(typeof(TimeSignalSchedule)) as TimeSignalSchedule)
+                .Enabled = true;
+            return onMessage;
+        }
+
+        public static string TimeSignalOff()
+        {
+            (SchedulerService.GetInstance().GetSchedule(typeof(TimeSignalSchedule)) as TimeSignalSchedule)
+                .Enabled = false;
+            return offMessage;
+        }
+
+        public static string Error()
+        {
+            return errorMessage;
         }
     }
 }
