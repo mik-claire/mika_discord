@@ -6,7 +6,8 @@ namespace mika_discord.Reaction
 {
     public abstract class ReactionBase
     {
-        protected static List<string> Keywords = new List<string>();
+        protected List<string> Keywords = new List<string>();
+
         public abstract Task Execute(ISocketMessageChannel channel, SocketUser user, params string[] args);
 
         public bool Hit(string keyword)
