@@ -10,13 +10,22 @@ namespace mika_discord.Reaction
 
         public abstract Task Execute(ISocketMessageChannel channel, SocketUser user, params string[] args);
 
-        public bool Hit(string keyword)
+        public bool Hit(string target)
         {
-            if (string.IsNullOrWhiteSpace(keyword))
+            if (string.IsNullOrWhiteSpace(target))
             {
-                keyword = string.Empty;
+                target = string.Empty;
             }
-            return Keywords.Contains(keyword);
+
+            foreach (var keyword in Keywords)
+            {
+                if (target.StartsWith(keyword))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         protected string GetMentionPrefix(SocketUser user)
