@@ -33,7 +33,7 @@ namespace mika_discord.Schedule
             }
 
             string message = Pso2Day.GetMessage(Pso2DayTiming.Get(now.Hour));
-            if (!string.IsNullOrWhiteSpace(message))
+            if (string.IsNullOrWhiteSpace(message))
             {
                 return;
             }
